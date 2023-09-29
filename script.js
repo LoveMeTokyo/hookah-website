@@ -1,42 +1,78 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const productForm = document.getElementById("product-form");
-    const productList = document.getElementById("product-list");
+// script.js
+document.addEventListener('DOMContentLoaded', function () {
+    const productShowcase = document.getElementById('product-showcase');
+    const addItemButton = document.getElementById('add-item-button');
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
 
-    productForm.addEventListener("submit", function (e) {
-        e.preventDefault();
+    // Example product data (you can replace this with your actual product data)
+    const products = [
+        { name: 'Hookah Part 1', price: 20.00 },
+        { name: 'Hookah Part 2', price: 15.00 },
+        { name: 'Hookah Part 3', price: 25.00 }
+    ];
 
-        // Get form values
-        const productName = document.getElementById("product-name").value;
-        const productDescription = document.getElementById("product-description").value;
-        const productPrice = parseFloat(document.getElementById("product-price").value);
-        const productImage = document.getElementById("product-image").value;
+    // Initialize cart and total
+    const cart = [];
+    let total = 0;
 
-        // Create a product object
-        const product = {
-            name: productName,
-            description: productDescription,
-            price: productPrice,
-            image: productImage,
-        };
+    // Function to update the cart and total
+    function updateCart() {
+        cartItems.innerHTML = '';
+        total = 0;
 
-        // Add the product to the product list
-        displayProduct(product);
+        cart.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
+            cartItems.appendChild(li);
+            total += item.price;
+        });
 
-        // Clear the form fields
-        productForm.reset();
-    });
+        cartTotal.textContent = total.toFixed(2);
+    }
 
-    // Function to display a product
-    function displayProduct(product) {
-        const productItem = document.createElement("div");
-        productItem.classList.add("product-item");
-        productItem.innerHTML = `
-            <img src="${product.image}" alt="${product.name}">
+    // Populate the product showcase
+    products.forEach(product => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = `
             <h3>${product.name}</h3>
-            <p>${product.description}</p>
             <p>$${product.price.toFixed(2)}</p>
+            <button class="add-to-cart">Add to Cart</button>
         `;
 
-        productList.appendChild(productItem);
-    }
+        const addToCartButton = card.querySelector('.add-to-cart');
+        addToCartButton.addEventListener('click', () => {
+            cart.push(product);
+            updateCart();
+        });
+
+        productShowcase.appendChild(card);
+    });
+
+    // Add Item button functionality (for demonstration)
+    addItemButton.addEventListener('click', () => {
+        const itemName = prompt('Enter the name of the new hookah part:');
+        const itemPrice = parseFloat(prompt('Enter the price of the new hookah part:'));
+        if (!isNaN(itemPrice)) {
+            const newItem = { name: itemName, price: itemPrice };
+            products.push(newItem);
+
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.innerHTML = `
+                <h3>${newItem.name}</h3>
+                <p>$${newItem.price.toFixed(2)}</p>
+                <button class="add-to-cart">Add to Cart</button>
+            `;
+
+            const addToCartButton = card.querySelector('.add-to-cart');
+            addToCartButton.addEventListener('click', () => {
+                cart.push(newItem);
+                updateCart();
+            });
+
+            productShowcase.appendChild(card);
+        }
+    });
 });
